@@ -162,10 +162,12 @@ for j in range(8):
     model[j].add(Conv2D(64,kernel_size=5,activation='relu'))
     model[j].add(MaxPool2D())
     model[j].add(Flatten())
+
     if j>0:
         model[j].add(Dense(2**(j+4), activation='relu'))
     model[j].add(Dense(10, activation='softmax'))
     model[j].compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+    model[i].summary()
 # CREATING VALIDATION SET
 X_train2, X_val2, Y_train2, Y_val2 = train_test_split(X_train, Y_train, test_size = 0.333)
 # TRAIN NETWORKS
@@ -177,24 +179,31 @@ for j in range(nets):
         validation_data = (X_val2,Y_val2), callbacks=[annealer], verbose=0)
     print("CNN {0}: Epochs={1:d}, Train accuracy={2:.5f}, Validation accuracy={3:.5f}".format(
         names[j],epochs,max(history[j].history['accuracy']),max(history[j].history['val_accuracy']) ))
-with open('models_pickle/training_history3.pkl', 'wb') as file:
-    pickle.dump(history, file)
+# with open('models_pickle/training_history3.pkl', 'wb') as file:
+#     pickle.dump(history, file)
 with open('models_pickle/training_model3.pkl', 'wb') as file:
     pickle.dump(model, file)
 '''
 with open('models_pickle/training_history3.pkl', 'rb') as file:
     history = pickle.load(file)
+with open('models_pickle/training_model3.pkl', 'rb') as file:
+    model = pickle.load(file)
 print('--------------------------------------------------------------------------------------------------------')
 
+
+for i in range(0,len(model)):
+    print(model[i].summary())
 nets = 8
 names = ["0N","32N","64N","128N","256N","512N","1024N","2048N"]
 epochs = 10
 for j in range(nets):
+    
     print("CNN {0}: Epochs={1:d}, Train accuracy={2:.5f}, Validation accuracy={3:.5f}".format(
         names[j],epochs,max(history[j].history['accuracy']),max(history[j].history['val_accuracy']) ))
 # PLOTING ACCURACIES
 plt.figure(figsize=(15,5))
 for i in range(nets):
+    # history[i].summary()
     plt.plot(history[i].history['accuracy'],linestyle=styles[i])
 plt.title('model accuracy')
 plt.ylabel('accuracy')
